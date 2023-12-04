@@ -5,8 +5,31 @@ import (
 	"fmt"
 	"log"
 	"os"
+	s "strings"
 	"sync"
 )
+
+var digits = map[string]int{
+	"0":     0,
+	"1":     1,
+	"2":     2,
+	"3":     3,
+	"4":     4,
+	"5":     5,
+	"6":     6,
+	"7":     7,
+	"8":     8,
+	"9":     9,
+	"one":   1,
+	"two":   2,
+	"three": 3,
+	"four":  4,
+	"five":  5,
+	"six":   6,
+	"seven": 7,
+	"eight": 8,
+	"nine":  9,
+}
 
 func main() {
 	file, err := os.Open("input.txt")
@@ -47,17 +70,27 @@ func main() {
 	fmt.Printf("Sum: %d", sum)
 }
 
-func parseNumber(s string) int {
-	var n1, n2 byte
-	i := 0
+func parseNumber(str string) int {
+	n1, n2, pos1, pos2 := 0, 0, -1, -1
 
-	for i = 0; s[i] < byte('0') || s[i] > byte('9'); i++ {
+	for num, val := range digits {
+		if !s.Contains(str, num) {
+			continue
+		}
+
+		idx := s.Index(str, num)
+		lastIdx := s.LastIndex(str, num)
+
+		if pos1 == -1 || idx < pos1 {
+			n1 = val
+			pos1 = idx
+		}
+
+		if pos2 == -1 || lastIdx > pos2 {
+			n2 = val
+			pos2 = lastIdx
+		}
 	}
-	n1 = s[i] - byte('0')
 
-	for i = len(s) - 1; s[i] < byte('0') || s[i] > byte('9'); i-- {
-	}
-	n2 = s[i] - byte('0')
-
-	return int(n1*10 + n2)
+	return n1*10 + n2
 }
