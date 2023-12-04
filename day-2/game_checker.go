@@ -10,12 +10,6 @@ import (
 	"sync"
 )
 
-var config = map[string]int{
-	"red":   12,
-	"green": 13,
-	"blue":  14,
-}
-
 func main() {
 	file, err := os.Open("input.txt")
 
@@ -35,7 +29,7 @@ func main() {
 		wg.Add(1)
 		go func(s string) {
 			defer wg.Done()
-			c <- checkGame(s)
+			c <- checkGamePower(s)
 		}(scanner.Text())
 	}
 
@@ -55,9 +49,14 @@ func main() {
 	fmt.Printf("Sum: %d", sum)
 }
 
-func checkGame(game string) int {
-	gameId, gameLog, _ := s.Cut(game, ":")
-	_, gameId, _ = s.Cut(gameId, " ")
+func checkGamePower(game string) int {
+	_, gameLog, _ := s.Cut(game, ":")
+
+	var maxColor = map[string]int{
+		"red":   0,
+		"green": 0,
+		"blue":  0,
+	}
 
 	cubeSets := s.Split(gameLog, ";")
 	for _, cubeSet := range cubeSets {
@@ -65,16 +64,13 @@ func checkGame(game string) int {
 
 		for _, cube := range cubes {
 			num, color, _ := s.Cut(s.Trim(cube, " "), " ")
-
 			n, _ := sc.Atoi(num)
-			maxNum, exists := config[color]
 
-			if !exists || maxNum < n {
-				return 0
+			if n > maxColor[color] {
+				maxColor[color] = n
 			}
 		}
 	}
 
-	id, _ := sc.Atoi(gameId)
-	return id
+	return maxColor["red"] * maxColor["green"] * maxColor["blue"]
 }
