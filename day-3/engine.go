@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	sc "strconv"
-	s "strings"
 )
 
 func main() {
@@ -33,9 +32,11 @@ func main() {
 
 	for i, row := range engine {
 		for j, symbol := range row {
-			if s.ContainsRune(".0123456789", rune(symbol)) {
+			if symbol != rune('*') {
 				continue
 			}
+
+			var gearNums []int
 
 			//find numbers around
 			for y := -1; y <= 1; y++ {
@@ -54,9 +55,15 @@ func main() {
 
 					n, _ := sc.Atoi(engine[i+y][j+s+1 : j+f])
 					x = f - 1
-					sum += n
+					gearNums = append(gearNums, n)
 				}
 			}
+
+			if len(gearNums) != 2 {
+				continue
+			}
+
+			sum += gearNums[0] * gearNums[1]
 		}
 
 	}
