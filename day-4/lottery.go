@@ -4,10 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	s "strings"
-	"sync"
 )
 
 func main() {
@@ -20,36 +18,39 @@ func main() {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	c := make(chan int)
-	sum := 0
-
-	var wg sync.WaitGroup
+	var cardMathesNum []int
 
 	for scanner.Scan() {
-		wg.Add(1)
-		go func(s string) {
-			defer wg.Done()
-			c <- checkCardPoints(s)
-		}(scanner.Text())
+		cardMathesNum = append(cardMathesNum, checkCardMathes(scanner.Text()))
 	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 
-	go func() {
-		wg.Wait()
-		close(c)
-	}()
-
-	for result := range c {
-		sum += result
+	sum := len(cardMathesNum)
+	for i, p := range cardMathesNum {
+		if p > 0 {
+			sum += addCardCopies(cardMathesNum, i+1, p)
+		}
 	}
 
 	fmt.Printf("Sum: %d", sum)
 }
 
-func checkCardPoints(card string) int {
+func addCardCopies(cardMathesNum []int, start, num int) int {
+	sum := num
+
+	for i := 0; i < num; i++ {
+		if cardMathesNum[start+i] > 0 {
+			sum += addCardCopies(cardMathesNum, start+i+1, cardMathesNum[start+i])
+		}
+	}
+
+	return sum
+}
+
+func checkCardMathes(card string) int {
 	numMatches := 0
 	_, allNumbers, _ := s.Cut(card, ": ")
 	winningStr, cardNumbersStr, _ := s.Cut(allNumbers, " | ")
@@ -65,9 +66,5 @@ func checkCardPoints(card string) int {
 		}
 	}
 
-	if numMatches == 0 {
-		return 0
-	}
-
-	return int(math.Pow(2, float64(numMatches-1)))
+	return numMatches
 }
