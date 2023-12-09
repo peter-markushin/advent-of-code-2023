@@ -62,13 +62,11 @@ func next(row []int) int {
 		}
 	}
 
-	seqs[len(seqs)-1] = append(seqs[len(seqs)-1], 0)
-
 	for i := len(seqs) - 2; i >= 0; i-- {
-		seqs[i] = append(seqs[i], seqs[i][len(seqs[i])-1]+seqs[i+1][len(seqs[i+1])-1])
+		seqs[i] = append([]int{seqs[i][0] - seqs[i+1][0]}, seqs[i]...)
 	}
 
-	return row[len(row)-1] + seqs[0][len(seqs[0])-1]
+	return row[0] - seqs[0][0]
 }
 
 func allz(s []int) bool {
@@ -78,12 +76,4 @@ func allz(s []int) bool {
 		}
 	}
 	return true
-}
-
-func abs(n int) int {
-	if n < 0 {
-		return -n
-	}
-
-	return n
 }
