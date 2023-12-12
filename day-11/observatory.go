@@ -11,6 +11,8 @@ type Galaxy struct {
 	Row, Col int
 }
 
+const EXP_FACTOR = 999999
+
 func main() {
 	file, err := os.Open("input.txt")
 
@@ -39,7 +41,7 @@ func main() {
 		}
 
 		if !hasGalaxies {
-			spaceHeight += 1
+			spaceHeight += EXP_FACTOR
 		}
 
 		spaceHeight += 1
@@ -63,11 +65,11 @@ func main() {
 
 		for x := range galaxies {
 			if galaxies[x].Col-expandedBy > i {
-				galaxies[x].Col += 1
+				galaxies[x].Col += EXP_FACTOR
 			}
 		}
 
-		expandedBy += 1
+		expandedBy += EXP_FACTOR
 	}
 
 	sum := 0
